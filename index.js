@@ -17,7 +17,7 @@ const saveChange = () => {
   //uses the parent object, taskContainer to store the new card adjacent to each other by using the values returned by newCard, stored in createNewCard
   taskContainer.insertAdjacentHTML("beforeend", createNewCard);
 
-  
+
   //inserting the data in array of objects which is entered by user. Each object of data for every card is stored at diff indexes
   globalStore.push(taskData);
   //to locally store the data using key and value. REFER TO ONENOTE.
@@ -56,5 +56,25 @@ const newCard = ({ id, imageUrl, taskTitle, taskType, taskDescription }) => {
 </div>`;
 };
 
-// TO STORE DATA GLOBALLY IN BROWSER SO THAT IT CAN BE ACCESSED AFTER REFRESHING
+// TO STORE DATA GLOBALLY IN BROWSER SO THAT IT CAN BE ACCESSED AFTER REFRESHING. THE ARRAY STORES OBJECTS CONTAINING DATA OF EACH INDIVIDUAL CARD
 let globalStore = [];
+
+
+const loadInitialCard=()=>
+{
+  //To access local storage data using only key 
+  const getInitialData= localStorage.getItem("tasky");
+  if(!getInitialData) return;  // checks if getInitialData has no value and stops executing. This could be done when theres a system change
+
+  //To de-stringify data. {cards} stores the destringyfied data by using JSON.parse and stores the data of each card
+  const {cards}= JSON.parse(getInitialData);
+
+  cards.map((card)=>{
+    console.log("hi");
+    const createNewCard= newCard(card);
+    taskContainer.insertAdjacentHTML("beforeend", createNewCard);
+    globalStore.push(card);
+
+
+  });
+}

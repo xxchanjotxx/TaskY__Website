@@ -34,13 +34,13 @@ const newCard = ({ id, imageUrl, taskTitle, taskType, taskDescription }) => {
    <button type="button" class="btn btn-outline-success m">
      <i class="fas fa-pencil-alt"></i>
    </button>
-   <button type="button" class="btn btn-outline-danger">
-     <i class="fas fa-trash"></i>
+   <button type="button" id=${id} class="btn btn-outline-danger" onclick="deleteCard.apply(this, arguments) ">
+     <i class="fas fa-trash" onclick="deleteCard.apply(this, arguments)" id=${id}></i>
    </button>
  </div>
  <div class="card-body">
-   <img src=${imageUrl}
-   <h5 class="card-title">${taskTitle}/h5>
+   <img src=${imageUrl} class="card-img-top">
+   <h5 class="card-title">${taskTitle}</h5>
    <p class="card-text">
     ${taskDescription}
    </p>
@@ -59,7 +59,7 @@ const newCard = ({ id, imageUrl, taskTitle, taskType, taskDescription }) => {
 // TO STORE DATA GLOBALLY IN BROWSER SO THAT IT CAN BE ACCESSED AFTER REFRESHING. THE ARRAY STORES OBJECTS CONTAINING DATA OF EACH INDIVIDUAL CARD
 let globalStore = [];
 
-
+ 
 const loadInitialCard=()=>
 {
   //To access local storage data using only key 
@@ -70,11 +70,53 @@ const loadInitialCard=()=>
   const {cards}= JSON.parse(getInitialData);
 
   cards.map((card)=>{
-    console.log("hi");
     const createNewCard= newCard(card);
     taskContainer.insertAdjacentHTML("beforeend", createNewCard);
     globalStore.push(card);
-
-
   });
 }
+
+
+//get id of the card and remove the object with the id  
+const deleteCard=(event)=>
+{
+  //make an id for trash button to access it
+  //to get the id
+
+
+  // gets the event from the browser
+  event=window.event;
+
+  //gets the id from the target event, so make the id of card and button as same to delete it
+  const targetID=event.target.id;
+
+  // accessing the button  
+  const tagname= event.target.tagName;
+  console.log(tagname);
+
+  //making a new array by filtering out elements that DONT have to be deleted in a new array.
+  const updatedArray= globalStore.filter(
+    //acceses the element card by its ID and store which doesnt have to be deleted 
+    (card)=> card.id!== targetID
+    );
+
+  //access DOM to remove
+    globalStore= updatedArray;
+    localStorage.setItem("tasky",JSON.stringify({cards: globalStore}));
+
+    if (tagname==="BUTTON"){
+      //return event.target.parentNode.parentNode.parentNode.parentNode.removeChild
+      return taskContainer.removeChild(
+
+        event.target.parentNode.parentNode.parentNode 
+        
+      );
+    }
+
+    
+    return taskContainer.removeChild(
+      event.target.parentNode.parentNode.parentNode.parentNode  
+    );
+
+    
+};

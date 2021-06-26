@@ -22,6 +22,8 @@ const saveChange = () => {
   globalStore.push(taskData);
   //to locally store the data using key and value. REFER TO ONENOTE.
   localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
+
+  updateLocalStorage();
 };
 
 
@@ -76,6 +78,37 @@ const loadInitialCard=()=>
   });
 }
 
+const updateLocalStorage = () =>
+  localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
+
+
+const deleteCard = (event) => {
+  // id
+  event = window.event;
+  const targetID = event.target.id;
+  const tagname = event.target.tagName; // BUTTON
+
+  // search the globalStore, remove the object which matches with the id
+  globalStore = globalStore.filter((card) => card.id !== targetID);
+
+  updateLocalStorage();
+
+  // access DOM to remove them
+
+  if (tagname === "BUTTON") {
+    // task__container
+    return taskContainer.removeChild(
+      event.target.parentNode.parentNode.parentNode // col-lg-4
+    );
+  }
+
+  // task__container
+  return taskContainer.removeChild(
+    event.target.parentNode.parentNode.parentNode.parentNode // col-lg-4
+  );
+};
+
+/*
 
 //get id of the card and remove the object with the id  
 const deleteCard=(event)=>
@@ -120,3 +153,4 @@ const deleteCard=(event)=>
 
     
 };
+*/

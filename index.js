@@ -21,7 +21,7 @@ const saveChange = () => {
   globalStore.push(taskData);
   //to locally store the data using key and value. REFER TO ONENOTE.
   localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
-};   
+};
 
 // The parameters are from the taskData which is used to store what user inputs
 // Here the functionv returns an HTML code for card creation with the parameters used instead of straight values. Template literal is used
@@ -197,4 +197,17 @@ const saveEditChanges = (event) => {
   });
 
   localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
+
+  //not letting user edit after clicking save by making contenteditable as false
+  taskTitle.setAttribute("contenteditable", "false");
+  taskDescription.setAttribute("contenteditable", "false");
+  taskType.setAttribute("contenteditable", "false");
+
+  //to remove onclick button so that it doesnt keep calling functions and cause malfucntions
+
+  saveEdit.removeAttribute("onclick");
+
+  //making the button again as "Open task" once saved
+  saveEdit.innerHTML = "Open Task";
+  console.log(saveEdit.innerHTML);
 };

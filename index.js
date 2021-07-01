@@ -21,7 +21,7 @@ const saveChange = () => {
   globalStore.push(taskData);
   //to locally store the data using key and value. REFER TO ONENOTE.
   localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
-};
+};   
 
 // The parameters are from the taskData which is used to store what user inputs
 // Here the functionv returns an HTML code for card creation with the parameters used instead of straight values. Template literal is used
@@ -46,7 +46,7 @@ const newCard = ({ id, imageUrl, taskTitle, taskType, taskDescription }) => {
 
  </div>
  <div class="card-footer text-muted">
-   <button type="button" class="btn btn-outline-primary float-end">
+   <button type="button" class="btn btn-outline-primary float-end" id=${id} >
      Open Task
    </button>
  </div>
@@ -121,7 +121,7 @@ const editCard = (event) => {
   //referring to the card here
   if (tagname == "BUTTON") {
     parentElement = event.target.parentNode.parentNode;
-  } 
+  }
   // for the icon
   else {
     parentElement = event.target.parentNode.parentNode.parentNode;
@@ -129,20 +129,72 @@ const editCard = (event) => {
 
   // accessing the card title for the card to be edited using the parent element
   //childNodes[5] goes into the card body and then further
-  
+
   // USE CONSOLE AND CODE TO REFER
-  let taskTitle = parentElement.childNodes[3].childNodes[3];   //goes from card->card-body->card-title
-  let taskDescription = parentElement.childNodes[3].childNodes[5];   //goes from card->card-body->card-description
-  let taskType = parentElement.childNodes[3].childNodes[7];   //goes from card->card-body->card-type
-  
-  //accesing the open task button to change it to save changes when editing 
-  let saveEdit=parentElement.childNodes[5].childNodes[1];
+  let taskTitle = parentElement.childNodes[3].childNodes[3]; //goes from card->card-body->card-title
+  let taskDescription = parentElement.childNodes[3].childNodes[5]; //goes from card->card-body->card-description
+  let taskType = parentElement.childNodes[3].childNodes[7]; //goes from card->card-body->card-type
+
+  //accesing the open task button to change it to save changes when editing
+  let saveEdit = parentElement.childNodes[5].childNodes[1];
+  //changing the open task text to save changes
+  saveEdit.innerHTML = "Save Changes";
+
   //making tasktitle editable  (argument, value)
   taskTitle.setAttribute("contenteditable", "true");
   taskDescription.setAttribute("contenteditable", "true");
   taskType.setAttribute("contenteditable", "true");
 
-  //changing the open task text to save changes
-  saveEdit.innerHTML="Save Changes";
-  
+  //when we click on save changes button it goes to save the data function
+  saveEdit.setAttribute("onclick", "saveEditChanges.apply(this,arguments)");
+};
+
+const saveEditChanges = (event) => {
+  //get event
+  event = window.event;
+  const targetID = event.target.id;
+  const tagname = event.target.tagName;
+
+  // first access the parent element to edit a specific card and not all
+  let parentElement;
+
+  //referring to the card here
+  if (tagname == "BUTTON") {
+    parentElement = event.target.parentNode.parentNode;
+  }
+  // for the icon
+  else {
+    parentElement = event.target.parentNode.parentNode.parentNode;
+  }
+
+  // accessing the card title for the card to be edited using the parent element
+  //childNodes[5] goes into the card body and then further
+
+  // USE CONSOLE AND CODE TO REFER
+  let taskTitle = parentElement.childNodes[3].childNodes[3]; //goes from card->card-body->card-title
+  let taskDescription = parentElement.childNodes[3].childNodes[5]; //goes from card->card-body->card-description
+  let taskType = parentElement.childNodes[3].childNodes[7]; //goes from card->card-body->card-type
+
+  //updated data stored
+  const updatedData = {
+    taskTitle: taskTitle.innerHTML,
+    taskType: taskType.innerHTML,
+    taskDescription: taskDescription.innerHTML,
+  };
+
+  //map through the global array and return the original data replaced by the updatedData
+  globalStore = globalStore.map((task) => {
+    if (task.id === targetID) {
+      return {
+        id: task.id,
+        imageUrl: task.imageUrl,
+        taskTitle: updatedData.taskTitle,
+        taskType: updatedData.taskType,
+        taskDescription: updatedData.taskDescription,
+      };
+    }
+    return task; //important as it will make useless info ignored in map
+  });
+
+  localStorage.setItem("tasky", JSON.stringify({ cards: globalStore }));
 };
